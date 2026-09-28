@@ -1,0 +1,140 @@
+name: sahaya-nexus
+
+services:
+  db:
+    image: postgis/postgis:17-3.5-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: sahaya
+      POSTGRES_USER: sahaya
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks: [data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sahaya -d sahaya"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--save", "", "--appendonly", "no", "--maxmemory", "64mb", "--maxmemory-policy", "allkeys-lru"]
+    networks: [data]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.production
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql+psycopg://sahaya:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}@db:5432/sahaya
+      SECRET_KEY: ${SECRET_KEY:?Set SECRET_KEY}
+      BFF_SHARED_SECRET: ${BFF_SHARED_SECRET:?Set BFF_SHARED_SECRET}
+      CORS_ORIGIN: https://${SAHAYA_DOMAIN:?Set SAHAYA_DOMAIN}
+      APP_MODE: production
+      DATA_DIR: /app/data
+      REDIS_URL: redis://redis:6379/0
+      OLLAMA_URL: ${OLLAMA_URL:-}
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-gemma3:4b}
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - evidence_data:/app/data
+    networks: [app, data]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/v1/health', timeout=5).close()"]
+      interval: 20s
+      timeout: 7s
+      start_period: 90s
+      retries: 3
+
+  worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.production
+    restart: unless-stopped
+    command: python -m app.cli worker
+    environment:
+      DATABASE_URL: postgresql+psycopg://sahaya:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}@db:5432/sahaya
+      SECRET_KEY: ${SECRET_KEY:?Set SECRET_KEY}
+      APP_MODE: production
+      DATA_DIR: /app/data
+    depends_on:
+      api:
+        condition: service_healthy
+    volumes:
+      - evidence_data:/app/data
+    networks: [data]
+    healthcheck:
+      test: ["CMD", "python", "-c", "import os,time; p='/app/data/worker-heartbeat'; assert os.path.exists(p) and time.time()-os.path.getmtime(p)<180"]
+      interval: 30s
+      timeout: 5s
+      start_period: 120s
+      retries: 3
+
+  web:
+    build: ./frontend
+    restart: unless-stopped
+    environment:
+      API_INTERNAL_URL: http://api:8000
+      BFF_SHARED_SECRET: ${BFF_SHARED_SECRET:?Set BFF_SHARED_SECRET}
+      HOSTNAME: 0.0.0.0
+    networks: [edge, app]
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/').then(r => { if (!r.ok) process.exit(1) }).catch(() => process.exit(1))"]
+      interval: 20s
+      timeout: 7s
+      start_period: 45s
+      retries: 3
+
+  ingress:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    environment:
+      SAHAYA_DOMAIN: ${SAHAYA_DOMAIN:?Set SAHAYA_DOMAIN}
+      TLS_EMAIL: ${TLS_EMAIL:?Set TLS_EMAIL}
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./ops/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    networks: [edge]
+    depends_on:
+      web:
+        condition: service_healthy
+
+  ollama:
+    image: ollama/ollama:latest
+    profiles: [ai]
+    restart: unless-stopped
+    volumes:
+      - ollama_models:/root/.ollama
+    networks: [data]
+
+volumes:
+  postgres_data:
+  evidence_data:
+  caddy_data:
+  caddy_config:
+  ollama_models:
+
+networks:
+  edge:
+  app:
+  data:

@@ -1,0 +1,65 @@
+services:
+  db:
+    image: postgis/postgis:17-3.5-alpine
+    environment:
+      POSTGRES_DB: sahaya
+      POSTGRES_USER: sahaya
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sahaya"]
+      interval: 5s
+      retries: 10
+  redis:
+    image: redis:7-alpine
+    command: ["redis-server", "--save", "", "--appendonly", "no", "--maxmemory", "64mb", "--maxmemory-policy", "allkeys-lru"]
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      retries: 10
+  api:
+    build: ./backend
+    environment:
+      DATABASE_URL: postgresql+psycopg://sahaya:${POSTGRES_PASSWORD}@db:5432/sahaya
+      SECRET_KEY: ${SECRET_KEY:?Set SECRET_KEY in .env}
+      CORS_ORIGIN: http://localhost:3000
+      APP_MODE: production
+      DATA_DIR: /app/data
+      REDIS_URL: redis://redis:6379/0
+    ports:
+      - "127.0.0.1:${API_PORT:-8000}:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - evidence_data:/app/data
+  worker:
+    build: ./backend
+    command: python -m app.cli worker
+    environment:
+      DATABASE_URL: postgresql+psycopg://sahaya:${POSTGRES_PASSWORD}@db:5432/sahaya
+      SECRET_KEY: ${SECRET_KEY:?Set SECRET_KEY in .env}
+      APP_MODE: production
+      DATA_DIR: /app/data
+    depends_on:
+      db:
+        condition: service_healthy
+      api:
+        condition: service_started
+    volumes:
+      - evidence_data:/app/data
+  web:
+    build:
+      context: ./frontend
+    environment:
+      API_INTERNAL_URL: http://api:8000
+    ports:
+      - "127.0.0.1:${WEB_PORT:-3000}:3000"
+    depends_on:
+      - api
+volumes:
+  postgres_data:
+  evidence_data:

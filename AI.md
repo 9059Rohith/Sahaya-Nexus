@@ -1,0 +1,9 @@
+# AI and interpretation
+
+The default `RuleBasedProvider` is deterministic and local. It looks for domain terms in English, Hindi, Tamil and Malayalam, extracts simple English quantity phrases, checks urgency words and reports missing critical fields. Its structured response includes category, possible subcategory, quantity, unit, confidence, safety flags and explicitly empty values for unknown location, deadline and expiry. It never invents a medical decision or submits a request.
+
+When `OLLAMA_URL` points to a local Ollama instance, `LocalAIProvider` proposes a category and bounded quantity/unit with a short timeout. Unknown or malformed output falls back to the rule provider. Both providers only suggest fields; the person reviews and edits before submitting. Deterministic validation enforces category-specific requirements, and staff approve verification and assignment. The platform policy can disable local LLM assistance without disabling the manual form.
+
+Voice entry uses `faster-whisper` with a cached local `tiny` model. Run `python -m app.cli prepare-speech` once to download it into `DATA_DIR/models`; Docker users can run `docker compose exec api python -m app.cli prepare-speech`. The browser records audio only with permission, sends at most 10 MB to the local API, displays the transcript in the editable request field and never auto-submits it. If recording or the model is unavailable, typed intake still works. A locally generated speech check transcribed “I have sixty meals to donate tonight” as “I have 60 meals to donate tonight.”
+
+There is no paid API key or cloud AI dependency. The application does not bundle image classification, embeddings, automatic translation models or medical inference. Interface strings have hand-maintained dictionaries; they are not produced by a runtime translator. Prompt text is treated as untrusted data and cannot trigger privileged application actions.

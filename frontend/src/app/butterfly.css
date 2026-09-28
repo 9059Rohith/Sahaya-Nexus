@@ -1,0 +1,87 @@
+.app-butterfly-garden{position:fixed;inset:0;z-index:2;overflow:hidden;pointer-events:none;contain:layout paint}
+.app-butterfly{position:absolute;left:var(--start-x);top:var(--start-y);width:var(--butterfly-size);aspect-ratio:239.488/148.477;opacity:.72;filter:drop-shadow(0 5px 7px #234a2b30);will-change:transform;animation:app-butterfly-flight var(--flight-time) var(--flight-delay) ease-in-out infinite}
+.app-butterfly-garden[data-playing=false] *{animation-play-state:paused!important}
+@keyframes app-butterfly-flight{0%,100%{transform:translate3d(0,0,0) rotate(-5deg) scale(1)}25%{transform:translate3d(var(--dx-1),var(--dy-1),0) rotate(8deg) scale(1.03)}52%{transform:translate3d(var(--dx-2),var(--dy-2),0) rotate(-8deg) scale(.98)}77%{transform:translate3d(var(--dx-3),var(--dy-3),0) rotate(6deg) scale(1.04)}}
+@media(max-width:700px){.app-butterfly{width:calc(var(--butterfly-size) * .72);opacity:.64}.app-butterfly:nth-child(n+5){display:none}}
+@media(prefers-reduced-motion:reduce){.app-butterfly{animation:none!important;will-change:auto}}
+
+.moth-wings {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+}
+
+.moth-wing-panel {
+  position: absolute;
+  top: 0;
+  width: 50%;
+  height: 100%;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+.moth-wing-panel-left {
+  left: 0;
+  transform-origin: right center;
+  animation: moth-left-wing-flap var(--wing-time, 1.7s) ease-in-out infinite;
+}
+
+.moth-wing-panel-right {
+  right: 0;
+  transform-origin: left center;
+  animation: moth-right-wing-flap var(--wing-time, 1.7s) ease-in-out infinite;
+}
+
+.moth-wing {
+  display: block;
+  width: 100%;
+  height: 100%;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  backface-visibility: visible;
+}
+
+.moth-wing-right { transform: scaleX(-1); }
+
+.moth-body {
+  position: absolute;
+  z-index: 2;
+  top: 17%;
+  left: 50%;
+  width: 7%;
+  height: 68%;
+  transform: translateX(-50%);
+  border-radius: 50% 50% 55% 55%;
+  background: linear-gradient(#483544, #70545d);
+  box-shadow: 0 1px 2px #251d2799;
+}
+
+.moth-body::before {
+  content: '';
+  position: absolute;
+  top: -8%;
+  left: 50%;
+  width: 110%;
+  aspect-ratio: 1;
+  transform: translateX(-50%);
+  border-radius: 50%;
+  background: #483544;
+}
+
+@keyframes moth-left-wing-flap {
+  0%, 100% { transform: perspective(320px) rotateY(7deg); }
+  50% { transform: perspective(320px) rotateY(38deg); }
+}
+
+@keyframes moth-right-wing-flap {
+  0%, 100% { transform: perspective(320px) rotateY(-7deg); }
+  50% { transform: perspective(320px) rotateY(-38deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .moth-wing-panel { animation: none !important; will-change: auto; }
+  .moth-wing-panel-left { transform: perspective(320px) rotateY(14deg); }
+  .moth-wing-panel-right { transform: perspective(320px) rotateY(-14deg); }
+}

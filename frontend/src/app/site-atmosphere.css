@@ -1,0 +1,95 @@
+/* A shared botanical backdrop and restrained butterfly layer across public and workspace views. */
+:root { --sahaya-art: url('/sahaya-botanical-bg.webp'); }
+.public-page {
+  background: #f8faf6 var(--sahaya-art) center top / cover no-repeat;
+}
+.home-hero {
+  background: linear-gradient(90deg, rgba(249, 251, 247, .93), rgba(249, 251, 247, .72)), var(--sahaya-art) center 42% / cover no-repeat;
+}
+.public-snapshot {
+  background: linear-gradient(90deg, rgba(255, 254, 250, .9), rgba(255, 254, 250, .75)), var(--sahaya-art) center 62% / cover no-repeat;
+}
+.public-process {
+  background: linear-gradient(90deg, rgba(242, 249, 243, .87), rgba(242, 249, 243, .76)), var(--sahaya-art) center 70% / cover no-repeat;
+}
+.public-cause {
+  background: linear-gradient(120deg, rgba(13, 53, 53, .94), rgba(10, 48, 52, .87)), var(--sahaya-art) center 34% / cover no-repeat;
+}
+.public-draft-section {
+  background: linear-gradient(90deg, rgba(224, 242, 230, .85), rgba(238, 248, 237, .74)), var(--sahaya-art) center 82% / cover no-repeat;
+}
+.public-partners {
+  background: linear-gradient(90deg, rgba(246, 250, 245, .84), rgba(255, 254, 250, .8)), var(--sahaya-art) center 48% / cover no-repeat;
+}
+.public-trust {
+  background: linear-gradient(90deg, rgba(255, 254, 250, .91), rgba(246, 250, 246, .76)), var(--sahaya-art) center 70% / cover no-repeat;
+}
+.auth-page {
+  background: linear-gradient(rgba(246, 250, 246, .76), rgba(246, 250, 246, .8)), var(--sahaya-art) center / cover no-repeat;
+}
+.auth-visual {
+  background: linear-gradient(rgba(222, 243, 227, .64), rgba(219, 238, 224, .75)), var(--sahaya-art) 70% center / cover no-repeat;
+}
+.app-shell .main-column {
+  background: linear-gradient(rgba(250, 252, 248, .91), rgba(250, 252, 248, .92)), var(--sahaya-art) center top / cover no-repeat;
+}
+.app-shell .sidebar {
+  background: linear-gradient(160deg, rgba(12, 48, 56, .94), rgba(8, 40, 49, .92)), var(--sahaya-art) left center / cover no-repeat;
+}
+.app-butterfly-garden.ambient {
+  position: fixed;
+  z-index: 4;
+  opacity: .68;
+}
+.app-butterfly-garden.ambient .app-butterfly { opacity: .8; filter: drop-shadow(0 5px 8px #385b4452); }
+.home-hero-copy { z-index: 5; }
+.trust-path-step, .public-metrics > div, .public-draft-form, .public-orgs > article, .auth-card { position: relative; z-index: 5; }
+.app-butterfly-garden.hero { container-type: size; }
+.home-hero-visual .app-butterfly-garden.hero { opacity: .84; }
+.home-hero-visual .app-butterfly-garden.hero .app-butterfly { opacity: .9; filter: drop-shadow(0 7px 10px #305e444d); }
+.app-shell .app-butterfly-garden.ambient { z-index: 4; }
+.high-contrast .app-butterfly-garden.ambient { display: none; }
+
+/* The public Trust center reads as a guided set of safeguards, with deeper detail on demand. */
+.public-trust > .small-label { position: relative; z-index: 1; }
+.trust-story { position: relative; z-index: 1; }
+.trust-story-head { display: grid; grid-template-columns: minmax(0, 1.12fr) minmax(290px, .62fr); gap: clamp(28px, 6vw, 90px); align-items: center; margin: 15px 0 36px; }
+.trust-story-intro h2 { max-width: 700px; margin: 0 0 17px; text-wrap: balance; }
+.trust-story-intro p { max-width: 600px; margin: 0; color: #4c6567; font-size: 1.04rem; }
+.trust-story-promise { position: relative; min-height: 210px; overflow: hidden; display: flex; flex-direction: column; justify-content: flex-end; padding: 26px 30px; border: 1px solid #347366; border-radius: 22px; background: linear-gradient(140deg, rgba(15, 79, 70, .94), rgba(10, 57, 58, .91)), var(--sahaya-art) right center / cover no-repeat; color: #f8fcf5; box-shadow: 0 20px 42px #0c4b401f; }
+.trust-story-promise::after { content: ''; position: absolute; width: 195px; height: 195px; border: 1px solid #ffffff30; border-radius: 50%; top: -85px; right: -50px; }
+.trust-promise-icon { display: grid; place-items: center; width: 46px; height: 46px; margin-bottom: 18px; border: 1px solid #ffffff66; border-radius: 14px; background: #ffffff17; color: #f4d189; }
+.trust-story-promise strong { font-family: var(--font-jakarta), sans-serif; font-size: 1.21rem; letter-spacing: -.025em; }
+.trust-story-promise p { max-width: 365px; margin: 7px 0 0; color: #e0eee7; font-size: .85rem; line-height: 1.55; }
+.trust-path { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.trust-path-step { position: relative; min-height: 218px; padding: 25px 29px 29px; border: 1px solid #cfe0d3; border-radius: 20px; background: rgba(255, 255, 251, .9); box-shadow: 0 12px 27px #2154470c; }
+.trust-path-step::before { content: ''; position: absolute; left: 28px; right: 28px; top: 0; height: 3px; background: linear-gradient(90deg, #208175, #d2ae66); border-radius: 0 0 5px 5px; }
+.trust-path-top { display: flex; justify-content: space-between; align-items: center; color: #16796e; }
+.trust-path-top span { color: #b28a49; font-size: .7rem; font-weight: 850; letter-spacing: .18em; }
+.trust-path-top svg { color: #137b70; }
+.trust-path-step h3 { max-width: 380px; margin: 20px 0 8px; font-size: clamp(1.12rem, 1.45vw, 1.38rem); line-height: 1.25; letter-spacing: -.03em; }
+.trust-path-step p { max-width: 600px; margin: 0; color: #4b6468; font-size: .86rem; line-height: 1.64; }
+.trust-deeper-checks { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 27px; margin: 30px 0 28px; border-top: 1px solid #cbdcd1; }
+.trust-deeper-checks details { border-bottom: 1px solid #cbdcd1; }
+.trust-deeper-checks summary { display: flex; align-items: center; justify-content: space-between; gap: 15px; min-height: 66px; padding: 13px 2px; color: #204b4b; font-size: .84rem; font-weight: 800; cursor: pointer; list-style: none; }
+.trust-deeper-checks summary::-webkit-details-marker { display: none; }
+.trust-deeper-checks summary svg { flex: 0 0 auto; color: #127c70; transition: transform .2s; }
+.trust-deeper-checks details[open] summary svg { transform: rotate(90deg); }
+.trust-deeper-checks details p { padding: 0 29px 19px 2px; margin: 0; color: #4b6468; font-size: .84rem; line-height: 1.65; }
+.trust-safety-note { max-width: 880px; margin-bottom: 25px; background: rgba(255, 248, 230, .92); }
+
+@media (max-width: 820px) {
+  .trust-story-head { grid-template-columns: 1fr; gap: 25px; }
+  .trust-story-promise { min-height: 0; }
+}
+@media (max-width: 620px) {
+  :root { --sahaya-art: url('/sahaya-botanical-mobile-bg.webp'); }
+  .trust-path, .trust-deeper-checks { grid-template-columns: 1fr; }
+  .trust-path-step { min-height: 0; }
+  .trust-story-head { margin-bottom: 22px; }
+  .app-butterfly-garden.ambient .app-butterfly:nth-child(n+4) { display: none; }
+  .app-butterfly-garden.ambient { opacity: .64; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .trust-deeper-checks summary svg { transition: none; }
+}
